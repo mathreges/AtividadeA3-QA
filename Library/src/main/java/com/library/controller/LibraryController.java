@@ -17,6 +17,13 @@ public class LibraryController {
         libraryService.addBooks(book);
     }
 
+     @GetMapping("/books")
+    public List<Book> searchBooks(@RequestParam(required = false) String title,
+                                  @RequestParam(required = false) Author author,
+                                  @RequestParam(required = false) Publisher publisher) {
+        return libraryService.searchBooks(title, author, publisher);
+    }
+
 }
 
 
