@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            margin: 0;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: 40px auto;
+            height: 300px;
+            justify-content: space-evenly;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <label for="title">Title</label>
+        <input id="title" type="text" placeholder="title" name="title"/>
+
+        <label for="author-name">Author name</label>
+        <input id="author-name" type="text" placeholder="Author name" name="author-name"/>
+
+        <label for="author-nacionality">Author nacionality</label>
+        <input id="author-nacionality" type="text" placeholder="Author nacionality" name="author-nacionality"/>
+
+        <label for="publisher-name">Publisher name</label>
+        <input id="publisher-name" type="text" placeholder="title" name="publisher-name"/>
+
+        <label for="publisher-county">Publisher country</label>
+        <input id="publisher-county" type="text" placeholder="Publisher country" name="publisher-county"/>
+        <button type="submit" id="loadBooksButton">Adicionar</button>
+    </form>
+    <script>
+    document.getElementById('loadBooksButton').addEventListener('click', function() {
+        const title = document.getElementById('title').value;
+        const authorName = document.getElementById('author-name').value;
+        const authorNationality = document.getElementById('author-nacionality').value;
+        const publisherName = document.getElementById('publisher-name').value;
+        const publisherCountry = document.getElementById('publisher-county').value;
+
+        const newBook = {
+            title: title,
+            author: {
+                name: authorName,
+                nationality: authorNationality
+            },
+            publisher: {
+                name: publisherName,
+                country: publisherCountry
+            }
+        };
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newBook)
+        };
+
+        fetch('http://localhost:8080/api/books', requestOptions)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(books) {
+                window.location.replace('http://localhost:8080/')
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

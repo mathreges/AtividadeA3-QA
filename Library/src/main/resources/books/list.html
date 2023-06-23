@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library</title>
+    <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .book {
+                margin-bottom: 10px;
+            }
+        </style>
+</head>
+<body>
+<h1>Library</h1>
+
+<button id="loadBooksButton">Load Books</button>
+
+<div id="booksContainer"></div>
+
+<script>
+            document.getElementById('loadBooksButton').addEventListener('click', function() {
+                fetch('http://localhost:8080/api/books')
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(books) {
+                        const booksContainer = document.getElementById('booksContainer');
+                        booksContainer.innerHTML = '';
+                        books.forEach(function(book) {
+                            const bookDiv = document.createElement('div');
+                            bookDiv.classList.add('book');
+                            bookDiv.textContent = `Title: ${book.title}, Author: ${book.author.name}, Publisher: ${book.publisher.name}`;
+                            booksContainer.appendChild(bookDiv);
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                    });
+            });
+        </script>
+</body>
+</html>

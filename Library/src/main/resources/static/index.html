@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            margin: 0;
+        }
+        .main-content {
+            margin: 0;
+            background-color: #fafafa;
+            height: 100vh;
+            padding: 40px 0 0 0;
+        }
+        h1 {
+            font-size: 36px;
+            text-align: center;
+            margin: 0;
+        }
+        .actions {
+            margin: 30px auto;
+            text-align: center;
+        }
+        .action.books {
+            padding: 12px 10px;
+            border-radius: 5px;
+            background: blueviolet;
+            color: white;
+            border: 0;
+            transition: scale .5s linear;
+        }
+        .action.books::hover {
+            transform: scale(1.1);
+        }
+        .book {
+            opacity: 0;
+            transition: opacity 700ms;
+            max-width: 500px;
+            margin: 30px auto;
+            text-align: center;
+            border: 5px solid blueviolet;
+            background: blueviolet;
+            color: white;
+            border-radius: 60px;
+            box-shadow: 10px 12px 21px 0px gray;
+        }
+        .appear {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+<section class="main-content">
+    <h1>Library</h1>
+    <div class="actions">
+        <button class="action books" id="loadBooksButton">Load Books</button>
+    </div>
+
+    <div id="booksContainer"></div>
+</section>
+
+
+<script>
+    document.getElementById('loadBooksButton').addEventListener('click', function() {
+        fetch('http://localhost:8080/api/books')
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(books) {
+                const booksContainer = document.getElementById('booksContainer');
+                booksContainer.innerHTML = '';
+                books.forEach(function(book, index) {
+                    setTimeout(function(){
+                    const bookDiv = document.createElement('div');
+                    bookDiv.classList.add('book');
+
+                    const titleElement = document.createElement('h2');
+                    titleElement.textContent = book.title;
+                    bookDiv.appendChild(titleElement);
+
+                    const authorElement = document.createElement('p');
+                    authorElement.textContent = `Author: ${book.author.name}, Nationality: ${book.author.nationality}`;
+                    bookDiv.appendChild(authorElement);
+
+                    const publisherElement = document.createElement('p');
+                    publisherElement.textContent = `Publisher: ${book.publisher.name}, Country: ${book.publisher.country}`;
+                    bookDiv.appendChild(publisherElement);
+
+                    const buttonElement = document.createElement('button');
+                    buttonElement.textContent = 'Delete';
+                    buttonElement.setAttribute("data-name", book.title);
+                    buttonElement.setAttribute("data-author-name", book.author.name);
+                    buttonElement.setAttribute("data-author-nationality", book.author.nationality);
+                    buttonElement.setAttribute("data-publisher-name", book.publisher.name);
+                    buttonElement.setAttribute("data-publisher-country", book.publisher.country);
+                    buttonElement.classList.add("deleteBookButton")
+
+                    bookDiv.appendChild(buttonElement);
+
+
+                    booksContainer.appendChild(bookDiv);
+                    setTimeout(function() {
+                        bookDiv.classList.add("appear")
+                    }, 500);
+                    }, index * 300);
+                });
+                createListeners();
+            })
+        .catch(function(error) {
+            console.error('Error:', error);
+        });
+    });
+    function createListeners() {
+        setTimeout(function() {
+        var deleteButtons = document.getElementsByClassName('deleteBookButton');
+        console.log(deleteButtons.length)
+        for(let i = 0; i < deleteButtons.length; i++) {
+
+          deleteButtons[i].addEventListener("click", function(event) {
+            const title = event.target.getAttribute("data-name");
+            const authorName = event.target.getAttribute("data-author-name");
+            const authorNationality = event.target.getAttribute("data-author-nationality");
+            const publisherName = event.target.getAttribute("data-publisher-name");
+            const publisherCountry = event.target.getAttribute("data-publisher-country");
+            console.log('a');
+            const bookToDelete = {
+                title: title,
+                author: {
+                    name: authorName,
+                    nationality: authorNationality
+                },
+                publisher: {
+                    name: publisherName,
+                    country: publisherCountry
+                }
+            };
+
+            const requestOptions = {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bookToDelete)
+            };
+
+            fetch('http://localhost:8080/api/books?title=' + encodeURIComponent(title) + '&author=' + encodeURIComponent(authorName) + '&publisher=' + encodeURIComponent(publisherName), requestOptions)
+            .then(function(response) {
+              if (response.ok) {
+                // Book successfully deleted, refresh the book list
+                document.getElementById('loadBooksButton').click();
+              } else {
+                // Handle the error case
+                console.error('Error:', response.status, response.statusText);
+              }
+            })
+            .catch(function(error) {
+              console.error('Error:', error);
+            });
+          })
+        }
+        }, 3000);
+    }
+
+</script>
+</body>
+</html>
