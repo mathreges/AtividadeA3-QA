@@ -27,5 +27,11 @@ public class LibraryService {
                 .collect(Collectors.toList());
     }
 
+    public void removeBook(String title, Author author, Publisher publisher) {
+    library.getBooks().removeIf(book -> book.getTitle().equals(title) &&
+                                book.getAuthor().equals(author) &&
+                                book.getPublisher().equals(publisher));
+    }
+
 }
 
