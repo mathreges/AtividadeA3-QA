@@ -38,7 +38,6 @@ public class LibraryController {
     public List<Book> removeBook(@RequestBody Book book) {
         return libraryService.removeBook(book.getTitle(), book.getAuthor(), book.getPublisher());
     }
-
 }
 
 
